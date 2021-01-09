@@ -7,15 +7,18 @@ license = "MIT"
 readme = "README.md"
 homepage = "https://github.com/alexsdutton/python-maestro-servo"
 documentation = "https://maestro-servo.readthedocs.org/"
-packages = ["maestro"]
+packages = [
+    { include = "maestro"},
+]
 
 [tool.poetry.dependencies]
 python = ">=3.7"
 pyusb = "^1.1.0"
+Sphinx = { version = "^3.4.3", optional = true }
+sphinx-autodoc-annotation = { version = "^1.0-1", optional = true }
 
-[tool.poetry.dev-dependencies]
-Sphinx = "^3.4.3"
-sphinx-autodoc-annotation = "^1.0-1"
+[tool.poetry.extras]
+docs = ["Sphinx", "sphinx-autodoc-annotation"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
