@@ -43,4 +43,6 @@ And the result:
 Using a channel as a servo
 --------------------------
 
-A channel
+.. note::
+
+   To be continued…

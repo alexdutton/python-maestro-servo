@@ -27,4 +27,4 @@ You'll need a file in `/etc/udev/rules.d/`, e.g. `/etc/udev/rules.d/10-pololu.ru
 
 This ensures that the currently-logged-in user on a desktop machine is able to access the device.
 
-One this is done, you're all set.
+Once this is done, you're all set.
