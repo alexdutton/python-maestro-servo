@@ -7,7 +7,9 @@ from maestro.constants import CONTROL_TRANSFER_SET_TYPE
 from maestro.enums import ChannelMode, Request, ServoVariableMask, USCParameter
 
 if typing.TYPE_CHECKING:
-    from maestro import Maestro
+    import maestro
+
+__all__ = ["Channel"]
 
 
 def _require_channel_mode(*modes: typing.Iterable[ChannelMode]):
@@ -25,7 +27,7 @@ def _require_channel_mode(*modes: typing.Iterable[ChannelMode]):
     return wrapper
 
 
-def _servo_parameter(parameter: USCParameter, doc: str):
+def _servo_parameter(parameter: USCParameter, doc: str = None):
     @_require_channel_mode(ChannelMode.Servo)
     def getter(self):
         return self.maestro.get_raw_parameter(parameter + self.index * 9)
@@ -42,7 +44,7 @@ def _servo_parameter(parameter: USCParameter, doc: str):
 class Channel:
     """A channel on a Maestro servo controller."""
 
-    def __init__(self, maestro: Maestro, index: int, mode: ChannelMode):
+    def __init__(self, maestro: maestro.Maestro, index: int, mode: ChannelMode):
         self.maestro = maestro
         self.index = index
         self._mode = mode
@@ -51,6 +53,9 @@ class Channel:
         self._target = None
         self._speed = None
         self._acceleration = None
+
+    def __repr__(self):
+        return f"<{self.__module__}.{self.__class__.__name__} {self.index}: {self.mode.name}>"
 
     def set_servo_variable(self, variable_mask: ServoVariableMask, value: int):
         self.maestro.dev.ctrl_transfer(
@@ -68,6 +73,9 @@ class Channel:
 
     @property
     def mode(self) -> ChannelMode:
+        """The mode of this channel.
+
+        :type: ChannelMode"""
         return self._mode
 
     @mode.setter
@@ -78,8 +86,14 @@ class Channel:
     @property
     @_require_channel_mode(ChannelMode.Input)
     def value(self) -> float:
-        """The value read by this input, in the range [0, 1)."""
-        return self._target / (2 ** 10)
+        """The value read by this input, in the range [0, 1023].
+
+         The inputs on channels 0–11 are analogue: their values range from 0 to 1023,
+         representing voltages from 0 to Vcc V. The inputs on channels 12–23 are
+         digital: their values are either exactly 0 or exactly 1023.
+
+        :type: int"""
+        return self._target
 
     @property
     @_require_channel_mode(ChannelMode.Servo)
@@ -89,7 +103,9 @@ class Channel:
         Note that this is where the servo is currently being told to be, which will
         not necessarily be the target if speed and/or acceleration are non-zero.
 
-        :returns: The current position, in ms."""
+        The position is specified in milliseconds (ms).
+
+        :type: int"""
         return self._position / 4
 
     @property
@@ -105,7 +121,9 @@ class Channel:
     @property
     @_require_channel_mode(ChannelMode.Servo, ChannelMode.Output)
     def target(self):
-        """The current target position, in ms."""
+        """The current target position, in ms.
+
+        :type: int"""
         return self._target / 4
 
     @target.setter

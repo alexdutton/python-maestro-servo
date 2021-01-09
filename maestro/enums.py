@@ -3,13 +3,29 @@ import typing
 
 
 class ChannelMode(enum.IntEnum):
+    """Channel mode."""
+
     Servo = 0
+    """The channel is a servo."""
     ServoMultiplied = 1  # unused, as far as I can tell
+    """This value is defined within the Maestro Control Centre, but unused.
+    
+    It is not recommended to use this channel mode, as its purpose is unclear."""
     Output = 2
+    """The channel is an output.
+    
+    Output channels are controlled with a value in the range [0, 1023], which maps onto
+    the range [0, Vcc] volts."""
     Input = 3
+    """The channel is an input.
+    
+    The value is in the range [0, 1), corresponding to the input voltage range [0, Vcc]
+    volts."""
 
 
 class USCParameter(enum.IntEnum):
+    """Constants for getting and setting Maestro parameters."""
+
     Initialized = 0
     ServosAvailable = 1
     ServoPeriod = 2
@@ -74,6 +90,10 @@ def get_parameter_size(parameter: USCParameter) -> int:
 
 
 class Request(enum.IntEnum):
+    """Constants for Maestro USB control requests.
+
+    See :doc:`protocol` for more details about control requests."""
+
     GetRawParameter = 129  # REQUEST_GET_PARAMETER
     SetRawParameter = 130  # REQUEST_SET_PARAMETER
     GetVariablesMicroMaestro = 131  # REQUEST_GET_VARIABLES
